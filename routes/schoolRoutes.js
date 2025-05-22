@@ -81,13 +81,11 @@ router.get('/listSchools', (req, res) => {
 });
 
 
-// GET /allSchools?latitude=...&longitude=...
+// GET /allSchools
 router.get('/allSchools', (req, res) => {
-  const { latitude, longitude } = req.query;
-
-  if (!latitude || !longitude) {
-    return res.status(400).json({ error: 'Latitude and longitude are required' });
-  }
+  // Use default coordinates if not provided
+  const latitude = req.query.latitude || 28.6139;    // Default: New Delhi latitude
+  const longitude = req.query.longitude || 77.2090;  // Default: New Delhi longitude
 
   const sql = `
     SELECT *, (
@@ -106,6 +104,7 @@ router.get('/allSchools', (req, res) => {
     res.status(200).json(results);
   });
 });
+
 
 
 module.exports = router;
