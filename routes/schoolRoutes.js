@@ -3,25 +3,37 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// POST /addSchool – Add new school with full validation
 router.post('/addSchool', (req, res) => {
   const { name, address, latitude, longitude } = req.body;
 
+  // Check if all fields are present
   if (!name || !address || latitude === undefined || longitude === undefined) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
+  // Ensure name is a string
+  if (typeof name !== 'string') {
+    return res.status(400).json({ error: 'Name must be a string' });
+  }
+
+  // Validate name format
   const nameRegex = /^[a-zA-Z\s]{2,100}$/;
   if (!nameRegex.test(name)) {
     return res.status(400).json({ error: 'Name must be 2–100 alphabetic characters' });
   }
 
+  // Ensure address is a string and valid
   if (typeof address !== 'string' || address.trim().length === 0 || address.length > 255) {
     return res.status(400).json({ error: 'Address must be a non-empty string (max 255 characters)' });
   }
 
+  // Check if latitude and longitude are numbers or numeric strings
   const lat = parseFloat(latitude);
   const lon = parseFloat(longitude);
+
+  if (typeof latitude === 'boolean' || typeof longitude === 'boolean') {
+    return res.status(400).json({ error: 'Latitude and longitude must be numbers, not booleans' });
+  }
 
   if (isNaN(lat) || lat < -90 || lat > 90) {
     return res.status(400).json({ error: 'Latitude must be a number between -90 and 90' });
@@ -31,6 +43,7 @@ router.post('/addSchool', (req, res) => {
     return res.status(400).json({ error: 'Longitude must be a number between -180 and 180' });
   }
 
+  // Insert into DB
   const sql = 'INSERT INTO schools (name, address, latitude, longitude) VALUES (?, ?, ?, ?)';
   db.query(sql, [name.trim(), address.trim(), lat, lon], (err, result) => {
     if (err) {
