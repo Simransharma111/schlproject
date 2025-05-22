@@ -3,6 +3,53 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
+// GET / — Serve a simple info page about your API
+router.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>School API Documentation</title>
+      <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; }
+        code { background: #ecf0f1; padding: 2px 6px; border-radius: 4px; }
+        pre { background: #ecf0f1; padding: 10px; border-radius: 6px; }
+        ul { line-height: 1.6; }
+      </style>
+    </head>
+    <body>
+      <h1>Welcome to the School API 🚀</h1>
+      <p>Below are the available endpoints you can use:</p>
+
+      <h2>1. Add School (POST)</h2>
+      <p><strong>Endpoint:</strong> <code>/addSchool</code></p>
+      <p><strong>Body Parameters (JSON):</strong></p>
+      <ul>
+        <li><code>name</code>: String, 2–100 alphabetic characters</li>
+        <li><code>address</code>: String, max 255 characters</li>
+        <li><code>latitude</code>: Number, between -90 and 90</li>
+        <li><code>longitude</code>: Number, between -180 and 180</li>
+      </ul>
+      <p>All fields are required and validated for format and type.</p>
+
+      <h2>2. List Schools by Location (GET)</h2>
+      <p><strong>Endpoint:</strong> <code>/listSchools?latitude=&lt;number&gt;&longitude=&lt;number&gt;</code></p>
+      <p>Returns all schools sorted by proximity to the given coordinates.</p>
+
+      <h2>3. List All Schools (GET)</h2>
+      <p><strong>Endpoint:</strong> <code>/allSchools</code></p>
+      <p>Returns all schools sorted by default location and then by name.</p>
+
+      <hr />
+      <p>Use tools like <a href="https://www.postman.com" target="_blank" rel="noopener">Postman</a> to test these endpoints easily.</p>
+    </body>
+    </html>
+  `);
+});
+
+
 router.post('/addSchool', (req, res) => {
   const { name, address, latitude, longitude } = req.body;
 
